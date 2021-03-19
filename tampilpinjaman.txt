@@ -1,0 +1,10 @@
+
+SELECT id AS angsuranke, 
+dateFrom AS tanggal, 
+platfon*((bunga/12)/(1-(1+(bunga/12)-lamapinjaman))) AS totalAngsuran, 
+(platfon*((bunga/12)/(1-(1+(bunga/12)-lamapinjaman))))-(bunga*lamapinjaman) AS angsuranPokok,
+bunga*lamapinjaman AS angsuranBunga,
+platfon-((platfon*((bunga/12)/(1-(1+(bunga/12)-lamapinjaman))))-(bunga*lamapinjaman)) AS sisaPinjaman
+FROM pinjaman 
+
+
