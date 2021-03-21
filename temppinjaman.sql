@@ -24,33 +24,23 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pinjaman`
+-- Table structure for table `temppinjaman`
 --
 
-CREATE TABLE `pinjaman` (
-  `id` varchar(11) NOT NULL,
-  `dateFrom` date DEFAULT NULL,
-  `platfon` int(11) NOT NULL,
-  `bunga` double NOT NULL,
-  `lamapinjaman` int(11) NOT NULL
+CREATE TABLE `temppinjaman` (
+  `id_pinjaman` varchar(11) NOT NULL,
+  `totalAngsuran` double NOT NULL,
+  `angsuranPokok` double NOT NULL,
+  `angsuranBunga` double NOT NULL,
+  `sisaPinjaman` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `pinjaman`
+-- Dumping data for table `temppinjaman`
 --
 
-INSERT INTO `pinjaman` (`id`, `dateFrom`, `platfon`, `bunga`, `lamapinjaman`) VALUES
-('A01', NULL, 20000000, 1.2, 15);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `pinjaman`
---
-ALTER TABLE `pinjaman`
-  ADD PRIMARY KEY (`id`);
+INSERT INTO `temppinjaman` (`id_pinjaman`, `totalAngsuran`, `angsuranPokok`, `angsuranBunga`, `sisaPinjaman`) VALUES
+('A01', 134228.18791946306, 134210.18791946306, 18, 19865789.812080536);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

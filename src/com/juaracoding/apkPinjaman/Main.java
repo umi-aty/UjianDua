@@ -29,7 +29,6 @@ public class Main {
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL, "root", "");
 			stat = conn.createStatement();
-
 			while (!conn.isClosed()) {
 				showMenu();
 			}
@@ -73,6 +72,10 @@ public class Main {
 	
 	static void insertData() {
 		try {
+			
+			System.out.print("ID Pinjaman = ");
+			String id = br.readLine();
+
 			Date date = new Date();
 			System.out.println("Tanggal = "+date);
 			System.out.print("Platfon = ");
@@ -81,11 +84,23 @@ public class Main {
 			double bunga = Double.parseDouble(br.readLine());
 			System.out.print("Lama Pinjaman = ");
 			int lamapinjaman = Integer.parseInt(br.readLine());
+			double totalAngsuran = (platfon*((bunga/12)/(1-(1+(bunga/12)-lamapinjaman))));
+			double angsuranPokok = (totalAngsuran-(bunga*lamapinjaman));
+			double angsuranBunga = (bunga*lamapinjaman);
+			double sisaPinjaman = (platfon-angsuranPokok);
 			
-			String qry = "INSERT INTO `pinjaman`(`platfon`, `bunga`, `lamapinjaman`) VALUES (%d,%f,%d)";
+			String qry = "INSERT INTO `pinjaman`(`id`,`platfon`, `bunga`, `lamapinjaman`) VALUES ('%s',%d,%f,%d)";
+	        String sentence = "INSERT INTO `temppinjaman` (`id_pinjaman`,`totalAngsuran`, `angsuranPokok`, `angsuranBunga`, `sisaPinjaman`) VALUES (?,?,?,?,?)";
 
-			qry = String.format(qry, platfon,bunga,lamapinjaman);
+			qry = String.format(qry, id,platfon,bunga,lamapinjaman);
 			
+			PreparedStatement statement = conn.prepareStatement(sentence);
+			statement.setString(1, id);
+			statement.setDouble(2, totalAngsuran);
+			statement.setDouble(3, angsuranPokok);
+			statement.setDouble(4, angsuranBunga);
+			statement.setDouble(5, sisaPinjaman);
+			statement.executeUpdate();
 			stat.execute(qry);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,37 +108,35 @@ public class Main {
 	}
 	
 	static void showData() {
-		String qry = "SELECT * FROM pinjaman ";
+		String qry = "SELECT * FROM temppinjaman left join pinjaman on temppinjaman.id_pinjaman = pinjaman.id";
 		try {
 			rs = stat.executeQuery(qry);
 			System.out.println("===== Data Pinjaman =====");
 			while (rs.next()) {
-				Date tanggal = rs.getDate("dateFrom");
-				int platfon = rs.getInt("platfon");
-				double bunga = rs.getDouble("bunga");
+				
+				
+				String id = rs.getString("id");
+				int pinjaman = rs.getInt("platfon");
 				int lamapinjaman = rs.getInt("lamapinjaman");
+				double bunga = rs.getDouble("bunga");
+				double totalAngsuran = rs.getDouble("totalAngsuran");
+				double angsuranPokok = rs.getDouble("angsuranPokok");
+				double angsuranBunga = rs.getDouble("angsuranBunga");
+				double sisaPinjaman = rs.getDouble("sisaPinjaman");
 				
-				System.out.println(String.format("Tanggal		: "+"%s", tanggal));
-				System.out.println(String.format("Platfon		: "+"%d", platfon));
-				System.out.println(String.format("Bunga		: "+"%f", bunga));
-				System.out.println(String.format("Lama Pinjaman	: "+"%d", lamapinjaman));
-				System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+				for (int i = 0; i<=lamapinjaman; i++) {
+					System.out.println("Angsuran Ke-"+i);
+					System.out.println(String.format("ID Pinjaman	: "+"%s", id));
+					System.out.println(String.format("Pinjaman	: "+"%d", pinjaman));
+					System.out.println(String.format("Bunga		: "+"%f", bunga));
+					System.out.println(String.format("Total Angsuran	: "+"%f", totalAngsuran));
+					System.out.println(String.format("Angsuran Pokok	: "+"%f", angsuranPokok));
+					System.out.println(String.format("Angsuran Bunga	: "+"%f", angsuranBunga));
+					System.out.println(String.format("Sisa Pinjaman	: "+"%f", sisaPinjaman));
+					System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+					
+				}
 				
-//				int id = rs.getInt("id");
-//				Date tanggal = rs.getDate("dateFrom");
-//				int pinjaman = rs.getInt("platfon");
-//				double totalAngsuran = rs.getDouble("totalAngsuran");
-//				double angsuranPokok = rs.getDouble("angsuranPokok");
-//				double angsuranBunga = rs.getDouble("angsuranBunga");
-//				double sisaPinjaman = rs.getDouble("sisaPinjaman");
-//				
-//				System.out.println(String.format("Angsuran ke		: "+"%d", id));
-//				System.out.println(String.format("Tanggal			: "+"%s", tanggal));
-//				System.out.println(String.format("Pinjaman			: "+"%d", pinjaman));
-//				System.out.println(String.format("Total Angsuran	: "+"%d", totalAngsuran));
-//				System.out.println(String.format("Angsuran Pokok	: "+"%d", angsuranPokok));
-//				System.out.println(String.format("Angsuran Bunga	: "+"%d", angsuranBunga));
-//				System.out.println(String.format("Sisa Pinjaman		: "+"%d", sisaPinjaman));
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
